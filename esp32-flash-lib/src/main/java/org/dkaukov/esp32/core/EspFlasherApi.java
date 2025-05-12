@@ -31,6 +31,7 @@ public final class EspFlasherApi {
   public static final int ESP_ROM_BAUD = 115200;
   public static final int ESP_ROM_BAUD_HIGH = 460800;
   public static final int ESP_ROM_BAUD_HIGHEST = 921600;
+  private static final String CHIP_PLACEHOLDER = "{chip}";
 
   private final EspFlasherProtocol protocol;
   private boolean useDeflate = true;
@@ -132,11 +133,11 @@ public final class EspFlasherApi {
     }
 
     public byte[] readFile(String pathStr) {
-      return FileUtils.readFile(pathStr.replace("{chip}", protocol.getChipId().getReadableName()));
+      return FileUtils.readFile(pathStr.replace(CHIP_PLACEHOLDER, protocol.getChipId().getReadableName()));
     }
 
     public byte[] readResource(String pathStr) {
-      return FileUtils.readResource(pathStr.replace("{chip}", protocol.getChipId().getReadableName()));
+      return FileUtils.readResource(pathStr.replace(CHIP_PLACEHOLDER, protocol.getChipId().getReadableName()));
     }
 
     public void reset() {
@@ -179,11 +180,11 @@ public final class EspFlasherApi {
     }
 
     public byte[] readFile(String pathStr) {
-      return FileUtils.readFile(pathStr.replace("{chip}", protocol.getChipId().getReadableName()));
+      return FileUtils.readFile(pathStr.replace(CHIP_PLACEHOLDER, protocol.getChipId().getReadableName()));
     }
 
     public byte[] readResource(String pathStr) {
-      return FileUtils.readResource(pathStr.replace("{chip}", protocol.getChipId().getReadableName()));
+      return FileUtils.readResource(pathStr.replace(CHIP_PLACEHOLDER, protocol.getChipId().getReadableName()));
     }
 
     public void reset() {
