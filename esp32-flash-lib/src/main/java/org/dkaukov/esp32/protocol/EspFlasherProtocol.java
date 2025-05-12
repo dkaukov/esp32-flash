@@ -703,7 +703,7 @@ public class EspFlasherProtocol {
       });
     time(() -> {
       for (int seq = 0; seq < blocks; seq++) {
-        progressCallback.onProgress(((float) seq * 100.0f) / (float) blocks);
+        progressCallback.onProgress((seq * 100.0f) / blocks);
         final int blockOffset = seq * blockSize;
         final int remaining = image.length - blockOffset;
         final int thisBlockSize = Math.min(blockSize, remaining);
@@ -748,7 +748,7 @@ public class EspFlasherProtocol {
     time(() -> {
       int chunkTimeout = timeoutPerMb(Timeout.WRITE_REGION_PER_MB, blockSize);
       for (int seq = 0; seq < blocks; seq++) {
-        progressCallback.onProgress(((float) seq * 100.0f) / (float) blocks);
+        progressCallback.onProgress((seq * 100.0f) / blocks);
         int offset = seq * blockSize;
         int end = Math.min(offset + blockSize, compressedSize);
         byte[] chunk = Arrays.copyOfRange(compressed, offset, end);
@@ -894,7 +894,7 @@ public class EspFlasherProtocol {
         byte[] pkt = slipEncode(payload.array());
         serialTransport.write(pkt, pkt.length);
         log.trace(">>>>: {}: {}", pkt.length, printHex(pkt));
-        progressCallback.onProgress(((float) pos * 100.0f) / (float) length);
+        progressCallback.onProgress((pos * 100.0f) / length);
       }
       String flashMd5 = printHex2(waitForResponse(null, timeoutPerMb(Timeout.READ_REGION_PER_MB, blockSize)));
       String imageMd5 = md5(Arrays.copyOf(dst, length));
