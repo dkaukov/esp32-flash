@@ -678,8 +678,8 @@ public class EspFlasherProtocol {
     throw new CommandTimeoutException(String.format("Timeout waiting for pattern %s", printHex(pattern)));
   }
 
-  private int timeoutPerMb(int secondsPerMb, int size_bytes) {
-    int result = (int) (secondsPerMb * ((double) size_bytes / (double) 1000000));
+  private int timeoutPerMb(int secondsPerMb, int sizeInBytes) {
+    int result = (int) (secondsPerMb * ((double) sizeInBytes / (double) 1000000));
     return Math.max(result, Timeout.DEFAULT);
   }
 
