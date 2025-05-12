@@ -19,10 +19,11 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
+import org.dkaukov.esp32.chip.Esp32ChipId;
 import org.dkaukov.esp32.io.ProgressCallback;
 import org.dkaukov.esp32.io.SerialTransport;
-import org.dkaukov.esp32.chip.Esp32ChipId;
 import org.dkaukov.esp32.protocol.EspFlasherProtocol;
 import org.dkaukov.esp32.utils.Utils;
 
@@ -49,7 +50,7 @@ public final class EspFlasherApi {
 
   public final class StartStage {
 
-    public StartStage withBaudRate(int baudRate, Consumer<Integer> baudRateSupplier) {
+    public StartStage withBaudRate(int baudRate, IntConsumer baudRateSupplier) {
       protocol.setBaudRate(baudRate);
       baudRateSupplier.accept(baudRate);
       return this;
@@ -197,6 +198,9 @@ public final class EspFlasherApi {
   }
 
   public static class FileUtils {
+
+    private FileUtils() {
+    }
 
     public static byte[] readFile(Path path) {
       try {

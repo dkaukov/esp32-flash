@@ -12,8 +12,8 @@
 package org.dkaukov.esp32.io;
 
 public interface ProgressCallback {
-  default void onProgress(float pct) {};
-  default void onStart() {};
-  default void onEnd() {};
-  default void onInfo(String value) {};
+  default void onProgress(float pct) {}
+  default void onStart() {}
+  default void onEnd() {}
+  default void onInfo(String value) {}
 }

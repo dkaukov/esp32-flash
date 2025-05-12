@@ -12,7 +12,6 @@
 package org.dkaukov.esp32.io;
 
 public interface SerialTransport {
-  void flush();
   int read(byte[] buffer, int length);
   void write(byte[] buffer, int length);
   void setControlLines(boolean dtr, boolean rts);
