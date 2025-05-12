@@ -58,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EspFlasherProtocol {
 
   // SLIP protocol
-  public static final byte SLIP_SEPARATOR = (byte) 0xC0;
+  private static final byte SLIP_SEPARATOR = (byte) 0xC0;
   private static final int MAX_RESPONSE_FRAME_SIZE = 1024 * 16;
 
   // Flashing timeouts (in ms)
@@ -113,7 +113,6 @@ public class EspFlasherProtocol {
   }
 
   // Misc constants
-  public static final int ESP_CHECKSUM_MAGIC = 0xEF;
   private static final int MEM_WRITE_SIZE = 0x1800;
   private static final int CHIP_DETECT_MAGIC_REG_ADDRESS = 0x40001000;
 

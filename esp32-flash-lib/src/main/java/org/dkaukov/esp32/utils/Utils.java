@@ -11,9 +11,6 @@
  */
 package org.dkaukov.esp32.utils;
 
-import static org.dkaukov.esp32.protocol.EspFlasherProtocol.ESP_CHECKSUM_MAGIC;
-import static org.dkaukov.esp32.protocol.EspFlasherProtocol.SLIP_SEPARATOR;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -27,6 +24,9 @@ import javax.annotation.Nonnull;
  * Utility class providing various helper methods for ESP32-related operations.
  */
 public class Utils {
+
+  private static final byte SLIP_SEPARATOR = (byte) 0xC0;
+  private static final int ESP_CHECKSUM_MAGIC = 0xEF;
 
   // Private constructor to prevent instantiation
   private Utils() {
