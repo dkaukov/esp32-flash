@@ -30,7 +30,7 @@
     </dependency>
     <dependency>
       <groupId>com.dkaukov.esp32</groupId>
-      <artifactId>esp-32-flash-lib</artifactId>
+      <artifactId>esp32-flash-lib</artifactId>
     </dependency>
   </dependencies>
 </project>
