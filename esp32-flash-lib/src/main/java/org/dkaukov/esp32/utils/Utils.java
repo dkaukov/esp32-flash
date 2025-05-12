@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 import java.util.zip.Deflater;
 
 import javax.annotation.Nonnull;
@@ -195,7 +195,7 @@ public class Utils {
    * @param task     the task to measure
    * @param callback the callback to receive the execution time in milliseconds
    */
-  public static void time(Runnable task, @Nonnull Consumer<Long> callback) {
+  public static void time(Runnable task, @Nonnull LongConsumer callback) {
     long start = System.nanoTime();
     task.run();
     long durationMs = (System.nanoTime() - start) / 1_000_000;
