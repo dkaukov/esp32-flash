@@ -52,7 +52,7 @@ public class Utils {
    * @param data the byte array to calculate the checksum for
    * @return the calculated checksum
    */
-  public static int _checksum(byte[] data) {
+  public static int calcChecksum(byte[] data) {
     int chk = ESP_CHECKSUM_MAGIC;
     for (byte b : data) {
       chk ^= (b & 0xFF);

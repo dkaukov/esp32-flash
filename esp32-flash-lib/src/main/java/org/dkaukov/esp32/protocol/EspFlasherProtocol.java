@@ -12,7 +12,7 @@
 package org.dkaukov.esp32.protocol;
 
 import static org.dkaukov.esp32.core.EspFlasherApi.FileUtils.readResource;
-import static org.dkaukov.esp32.utils.Utils._checksum;
+import static org.dkaukov.esp32.utils.Utils.calcChecksum;
 import static org.dkaukov.esp32.utils.Utils.compressBytes;
 import static org.dkaukov.esp32.utils.Utils.delayMS;
 import static org.dkaukov.esp32.utils.Utils.md5;
@@ -274,7 +274,7 @@ public class EspFlasherProtocol {
       return CommandPacket.builder()
         .opcode(RomCommand.FLASH_DATA)
         .data(payload.array())
-        .checksum(_checksum(getChunk()))
+        .checksum(calcChecksum(getChunk()))
         .build();
     }
   }
@@ -320,7 +320,7 @@ public class EspFlasherProtocol {
       return CommandPacket.builder()
         .opcode(RomCommand.MEM_DATA)
         .data(payload.array())
-        .checksum(_checksum(getChunk()))
+        .checksum(calcChecksum(getChunk()))
         .build();
     }
   }
@@ -408,7 +408,7 @@ public class EspFlasherProtocol {
       return CommandPacket.builder()
         .opcode(RomCommand.FLASH_DEFL_DATA)
         .data(payload.array())
-        .checksum(_checksum(compressedChunk))
+        .checksum(calcChecksum(compressedChunk))
         .build();
     }
   }
@@ -678,8 +678,8 @@ public class EspFlasherProtocol {
     throw new CommandTimeoutException(String.format("Timeout waiting for pattern %s", printHex(pattern)));
   }
 
-  private int timeoutPerMb(int seconds_per_mb, int size_bytes) {
-    int result = (int) (seconds_per_mb * ((double) size_bytes / (double) 1000000));
+  private int timeoutPerMb(int secondsPerMb, int size_bytes) {
+    int result = (int) (secondsPerMb * ((double) size_bytes / (double) 1000000));
     return Math.max(result, Timeout.DEFAULT);
   }
 
