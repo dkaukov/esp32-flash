@@ -22,7 +22,6 @@ import org.dkaukov.esp32.io.SerialTransport;
 public class EspLoader {
 
   static SerialPort comPort;
-  private static final boolean DEBUG = true;
 
   public static void main(String[] args) {
     // get the first port available, you might want to change that
@@ -67,10 +66,6 @@ public class EspLoader {
 
   private static SerialTransport getComPort() {
     return new SerialTransport() {
-      @Override
-      public void flush() {
-        comPort.flushIOBuffers();
-      }
       @Override
       public int read(byte[] buffer, int length) {
         return comPort.readBytes(buffer, length);
