@@ -52,4 +52,12 @@
     <module>esp32-flash-example</module>
   </modules>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub dkaukov Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/dkaukov/esp32-flash</url>
+    </repository>
+  </distributionManagement>
+
 </project>
