@@ -23,7 +23,6 @@
     <sonar.organization>dkaukov</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <basepom.central-publishing.repo-id>oss</basepom.central-publishing.repo-id>
-    <basepom.deploy.snapshot.repo-id>oss</basepom.deploy.snapshot.repo-id>
     <basepom.check.fail-license>false</basepom.check.fail-license>
   </properties>
 
