@@ -51,7 +51,7 @@ public final class EspFlasherApi {
   public final class StartStage {
 
     public StartStage withBaudRate(int baudRate, IntConsumer baudRateSupplier) {
-      protocol.setBaudRate(baudRate);
+      protocol.changeBaudRate(baudRate);
       baudRateSupplier.accept(baudRate);
       return this;
     }
@@ -143,6 +143,14 @@ public final class EspFlasherApi {
 
     public void reset() {
       protocol.reset();
+    }
+
+    public StubReadyStage softReset() {
+      if (getChipId() != Esp32ChipId.ESP8266) {
+        throw new IllegalStateException("Soft resetting is currently only supported on ESP8266");
+      }
+      protocol.runUserCode();
+      return this;
     }
   }
 

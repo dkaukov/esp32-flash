@@ -416,6 +416,23 @@ public class EspFlasherProtocol {
 
   @Data
   @Builder
+  static class FlashDeflEndCommand implements EspCommand {
+
+    private final int flag;
+
+    @Override
+    public CommandPacket toPacket() {
+      ByteBuffer payload = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+      payload.putInt(flag);
+      return CommandPacket.builder()
+        .opcode(RomCommand.FLASH_DEFL_END)
+        .data(payload.array())
+        .build();
+    }
+  }
+
+  @Data
+  @Builder
   static class SpiFlashMd5Command implements EspCommand {
 
     private final int address;
@@ -447,6 +464,29 @@ public class EspFlasherProtocol {
       payload.putInt(address);
       return CommandPacket.builder()
         .opcode(RomCommand.READ_REG)
+        .data(payload.array())
+        .build();
+    }
+  }
+
+  @Data
+  @Builder
+  static class WriteRegCommand implements EspCommand {
+
+    private final int address;
+    private final int value;
+    private final int mask;
+    private final int delayInMicroseconds;
+
+    @Override
+    public CommandPacket toPacket() {
+      ByteBuffer payload = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN);
+      payload.putInt(address);
+      payload.putInt(value);
+      payload.putInt(mask);
+      payload.putInt(delayInMicroseconds);
+      return CommandPacket.builder()
+        .opcode(RomCommand.WRITE_REG)
         .data(payload.array())
         .build();
     }
@@ -520,6 +560,18 @@ public class EspFlasherProtocol {
       return CommandPacket.builder()
         .opcode(StubCommand.READ_FLASH)
         .data(payload.array())
+        .build();
+    }
+  }
+
+  @Data
+  @Builder
+  static class RunUserCodeCommand implements EspCommand {
+    @Override
+    public CommandPacket toPacket() {
+      return CommandPacket.builder()
+        .opcode(StubCommand.RUN_USER_CODE)
+        .data(new byte[0])
         .build();
     }
   }
@@ -759,8 +811,7 @@ public class EspFlasherProtocol {
       }
       progressCallback.onProgress(100.0f);
       progressCallback.onEnd();
-    }, t -> progressCallback.onInfo(
-      String.format("Wrote %d bytes (%d compressed) at 0x%08X in %.2f seconds (effective %.2f kBit/s)...",
+    }, t -> progressCallback.onInfo(String.format("Wrote %d bytes (%d compressed) at 0x%08X in %.2f seconds (effective %.2f kBit/s)...",
         uncompressedSize, compressedSize, flashOffset, t / 1000.0, (uncompressedSize * 8) / (t / 1000.0) / 1024.0)));
   }
 
@@ -831,22 +882,48 @@ public class EspFlasherProtocol {
       .build(), Timeout.COMMAND_SHORT);
   }
 
-  public void setBaudRate(int baudRate) {
+  public void changeBaudRate(int baudRate) {
     exchange(ChangeBaudRateCommand.builder()
       .baudRate(baudRate)
       .build(), Timeout.COMMAND_SHORT);
   }
 
   public void detectChip() {
-    chipId = Esp32ChipId.fromMagicValue(exchange(ReadRegCommand.builder()
-      .address(CHIP_DETECT_MAGIC_REG_ADDRESS)
-      .build(), Timeout.COMMAND_SHORT).getValue());
+    chipId = Esp32ChipId.fromMagicValue(readReg(CHIP_DETECT_MAGIC_REG_ADDRESS));
     progressCallback.onInfo("Detected chip: " + chipId.getReadableName());
   }
 
-  public void endFlash() {
+  public int readReg(int address) {
+    return exchange(ReadRegCommand.builder()
+      .address(address)
+      .build(), Timeout.COMMAND_SHORT).getValue();
+  }
+
+  public void writeReg(int address, int value) {
+    exchange(WriteRegCommand.builder()
+      .address(address)
+      .value(value)
+      .mask(0xFFFFFFFF)
+      .delayInMicroseconds(0)
+      .build(), Timeout.COMMAND_SHORT);
+  }
+
+  public void updateReg(int address, int mask, int newValue) {
+    int value = readReg(address);
+    value &= ~mask;
+    value |= newValue & mask;
+    writeReg(address, value);
+  }
+
+  public void endFlash(boolean reboot) {
     exchange(FlashEndCommand.builder()
-      .flag(0) // run user code
+      .flag(reboot ? 0 : 1) // run user code
+      .build(), Timeout.COMMAND_SHORT, false);
+  }
+
+  public void endDeflFlash(boolean reboot) {
+    exchange(FlashDeflEndCommand.builder()
+      .flag(reboot ? 0 : 1) // run user code
       .build(), Timeout.COMMAND_SHORT, false);
   }
 
@@ -934,6 +1011,11 @@ public class EspFlasherProtocol {
         return;
       }
     }
+  }
+
+  public void runUserCode() {
+    byte[] pkt = slipEncode(RunUserCodeCommand.builder().build().toPacket().getPacket());
+    serialTransport.write(pkt, pkt.length);
   }
 
   public void reset() {
