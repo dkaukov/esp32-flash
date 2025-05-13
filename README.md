@@ -17,7 +17,6 @@ You must provide a `SerialTransport` implementation suitable for your environmen
 
 ```java
 public interface SerialTransport {
-    void flush();
     int read(byte[] buffer, int length);
     void write(byte[] buffer, int length);
     void setControlLines(boolean dtr, boolean rts);
