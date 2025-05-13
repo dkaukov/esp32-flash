@@ -1,0 +1,35 @@
+name: Maven Release
+
+on:
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required by release plugin to find previous tags
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+      - name: Run Maven release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mvn -B release:prepare release:perform --file pom.xml -s $GITHUB_WORKSPACE/settings.xml

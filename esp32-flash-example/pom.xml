@@ -5,13 +5,13 @@
   <parent>
     <groupId>com.dkaukov.esp32</groupId>
     <artifactId>esp32-flash</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>esp32-flash-example</artifactId>
 
   <properties>
-    <dep.jSerialComm.version>2.11.0</dep.jSerialComm.version>
+    <dep.jSerialComm.version>2.11.1</dep.jSerialComm.version>
     <dep.slf4j-simple.version>2.0.12</dep.slf4j-simple.version>
     <basepom.deploy.skip>true</basepom.deploy.skip>
   </properties>
