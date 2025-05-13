@@ -631,16 +631,16 @@ public class EspFlasherProtocol {
                 buffer.clear();
                 inFrame.set(true);
               }
-            } else if (inFrame.get()) {
-              if (buffer.hasRemaining()) {
-                buffer.put(b);
-              }
+            } else if (inFrame.get() && buffer.hasRemaining()) {
+              buffer.put(b);
             }
             return Optional.empty();
           })
         .filter(p -> p.getOpcode() == opCode);
       if (res.isPresent()) {
         return res.get();
+      } else {
+        delayMS(0);
       }
     }
     throw new CommandTimeoutException(String.format("Timeout waiting for opcode 0x%02X", opCode));
@@ -653,6 +653,7 @@ public class EspFlasherProtocol {
     while (System.currentTimeMillis() < deadline) {
       Optional<Byte> maybeByte = readByte();
       if (maybeByte.isEmpty()) {
+        delayMS(0);
         continue;
       }
       byte b = maybeByte.get();
@@ -669,10 +670,8 @@ public class EspFlasherProtocol {
           buffer.clear();
           inFrame = true;
         }
-      } else if (inFrame) {
-        if (buffer.hasRemaining()) {
-          buffer.put(b);
-        }
+      } else if (inFrame && buffer.hasRemaining()) {
+        buffer.put(b);
       }
     }
     throw new CommandTimeoutException(String.format("Timeout waiting for pattern %s", printHex(pattern)));
@@ -916,19 +915,23 @@ public class EspFlasherProtocol {
       try {
         EspReply res = waitForResponse(RomCommand.SYNC, Timeout.SYNC);
         if (res.isSuccess(false)) {
-          // flush the port to remove any pending replies
-          while (true) {
-            try {
-              waitForResponse(RomCommand.SYNC, Timeout.SYNC);
-            } catch (CommandTimeoutException e) {
-              return;
-            }
-          }
+          flushPendingReplies();
+          return;
         }
       } catch (CommandTimeoutException ignored) {
       }
     }
     throw new ProtocolFatalException("Failed to sync with ESP chip");
+  }
+
+  private void flushPendingReplies() {
+    while (true) {
+      try {
+        waitForResponse(RomCommand.SYNC, Timeout.SYNC);
+      } catch (CommandTimeoutException e) {
+        return;
+      }
+    }
   }
 
   public void reset() {
