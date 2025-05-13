@@ -39,3 +39,8 @@ jobs:
         run: |
           mvn -B release:prepare --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
           mvn -B release:perform --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Manually push commits and tags
+        run: |
+          git push origin HEAD:main
+          git push origin --tags
