@@ -4,7 +4,7 @@
 
   <groupId>io.github.dkaukov</groupId>
   <artifactId>esp32-flash</artifactId>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.4</version>
   <packaging>pom</packaging>
 
 
@@ -29,7 +29,7 @@
     <connection>scm:git:git://github.com/dkaukov/esp32-flash.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/dkaukov/esp32-flash.git</developerConnection>
     <url>https://github.com/dkaukov/esp32-flash</url>
-    <tag>HEAD</tag>
+    <tag>esp32-flash-1.0.4</tag>
   </scm>
 
   <dependencies>
@@ -54,7 +54,7 @@
       <dependency>
         <groupId>io.github.dkaukov</groupId>
         <artifactId>esp32-flash-lib</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.0.4</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
