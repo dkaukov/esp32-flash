@@ -33,7 +33,7 @@ jobs:
           cache: maven
           server-id: central
           server-username: CENTRAL_USERNAME # env variable for username in deploy
-          server-password: CENTRAL_TOKEN # env variable for token in deploy
+          server-password: CENTRAL_CENTRAL_TOKEN # env variable for token in deploy
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -50,4 +50,4 @@ jobs:
         run: mvn -B deploy
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+          CENTRAL_CENTRAL_TOKEN: ${{ secrets.CENTRAL_CENTRAL_TOKEN }}
