@@ -115,6 +115,7 @@ public class EspFlasherProtocol {
   // Misc constants
   private static final int MEM_WRITE_SIZE = 0x1800;
   private static final int CHIP_DETECT_MAGIC_REG_ADDRESS = 0x40001000;
+  public static final int PROTOCOL_SYNC_ATTEMPTS = 20;
 
   // Flash encryption support
   private static final Set<Esp32ChipId> CHIPS_WITH_FLASH_ENCRYPTION = EnumSet.of(
@@ -910,7 +911,7 @@ public class EspFlasherProtocol {
 
   public void sync() {
     byte[] pkt = slipEncode(SyncCommand.builder().build().toPacket().getPacket());
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < PROTOCOL_SYNC_ATTEMPTS; i++) {
       serialTransport.write(pkt, pkt.length);
       try {
         EspReply res = waitForResponse(RomCommand.SYNC, Timeout.SYNC);
@@ -921,11 +922,12 @@ public class EspFlasherProtocol {
       } catch (CommandTimeoutException ignored) {
       }
     }
-    throw new ProtocolFatalException("Failed to sync with ESP chip");
+    throw new ProtocolSyncException("Failed to sync with ESP chip");
   }
 
   private void flushPendingReplies() {
-    while (true) {
+    // We had 20 sync attempts, so we can assume we have no more than 20 pending replies
+    for (int i = 0; i < PROTOCOL_SYNC_ATTEMPTS; i++) {
       try {
         waitForResponse(RomCommand.SYNC, Timeout.SYNC);
       } catch (CommandTimeoutException e) {
