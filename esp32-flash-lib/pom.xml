@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.dkaukov.esp32</groupId>
     <artifactId>esp32-flash</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>esp32-flash-lib</artifactId>
