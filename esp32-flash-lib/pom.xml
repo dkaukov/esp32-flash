@@ -8,6 +8,8 @@
   </parent>
 
   <artifactId>esp32-flash-lib</artifactId>
+  <url>https://github.com/dkaukov/esp32-flash</url>
+
   <properties>
     <dep.minimal-json.version>0.9.5</dep.minimal-json.version>
     <dep.slf4j-api.version>2.0.12</dep.slf4j-api.version>
