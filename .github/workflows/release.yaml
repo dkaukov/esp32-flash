@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Maven release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           mvn -B release:prepare --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
           mvn -B release:perform --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
