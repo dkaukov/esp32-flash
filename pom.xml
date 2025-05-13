@@ -7,6 +7,9 @@
   <version>1.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <description>
+    Java library for interacting with ESP32 flash and bootloader from host tools.
+  </description>
 
   <parent>
     <groupId>org.basepom</groupId>
@@ -64,5 +67,21 @@
     <module>esp32-flash-lib</module>
     <module>esp32-flash-example</module>
   </modules>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License v3.0</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>dkaukov</id>
+      <name>Dmitry Kaukov</name>
+      <url>https://github.com/dkaukov</url>
+    </developer>
+  </developers>
 
 </project>
