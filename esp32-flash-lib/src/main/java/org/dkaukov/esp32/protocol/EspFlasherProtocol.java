@@ -860,6 +860,7 @@ public class EspFlasherProtocol {
     progressCallback.onInfo("Got reply, stub is started");
   }
 
+  @SuppressFBWarnings("AT_STALE_THREAD_WRITE_OF_PRIMITIVE")
   public void loadStub() {
     JsonObject json = Json.parse(new String(readResource(chipId.getStubName()), StandardCharsets.UTF_8)).asObject();
     int entryPoint = json.getInt("entry", 0);

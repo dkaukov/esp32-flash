@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.dkaukov.esp32</groupId>
+    <groupId>io.github.dkaukov</groupId>
     <artifactId>esp32-flash</artifactId>
     <version>1.0.4-SNAPSHOT</version>
   </parent>
@@ -28,7 +28,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.dkaukov.esp32</groupId>
+      <groupId>io.github.dkaukov</groupId>
       <artifactId>esp32-flash-lib</artifactId>
     </dependency>
   </dependencies>
