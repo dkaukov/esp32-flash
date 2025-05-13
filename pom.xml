@@ -7,9 +7,8 @@
   <version>1.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <description>
-    Java library for interacting with ESP32 flash and bootloader from host tools.
-  </description>
+  <description>Java library for interacting with ESP32 flash and bootloader from host tools.</description>
+  <url>https://github.com/dkaukov/esp32-flash</url>
 
   <parent>
     <groupId>org.basepom</groupId>
