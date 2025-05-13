@@ -4,7 +4,7 @@
 
   <groupId>io.github.dkaukov</groupId>
   <artifactId>esp32-flash</artifactId>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
 
@@ -55,7 +55,7 @@
       <dependency>
         <groupId>io.github.dkaukov</groupId>
         <artifactId>esp32-flash-lib</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
