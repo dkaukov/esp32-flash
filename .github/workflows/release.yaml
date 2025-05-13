@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main  # Branch to release from
           fetch-depth: 0  # Required by release plugin to find previous tags
 
       - name: Set up Git
