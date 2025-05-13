@@ -20,6 +20,10 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
+      - name: Authenticate git for pushing
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -30,7 +34,7 @@ jobs:
 
       - name: Run Maven release
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -B release:prepare --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
           mvn -B release:perform --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
