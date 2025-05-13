@@ -52,7 +52,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.dkaukov.esp32</groupId>
+        <groupId>org.dkaukov.esp32</groupId>
         <artifactId>esp32-flash-lib</artifactId>
         <version>1.0.0-SNAPSHOT</version>
       </dependency>

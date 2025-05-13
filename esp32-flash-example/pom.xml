@@ -29,7 +29,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.dkaukov.esp32</groupId>
+      <groupId>org.dkaukov.esp32</groupId>
       <artifactId>esp32-flash-lib</artifactId>
     </dependency>
   </dependencies>
