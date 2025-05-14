@@ -94,4 +94,18 @@
     <module>esp32-flash-example</module>
   </modules>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <configuration>
+            <excludeArtifacts>esp32-flash-example</excludeArtifacts>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
 </project>
