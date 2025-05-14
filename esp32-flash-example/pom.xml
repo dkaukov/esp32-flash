@@ -21,8 +21,6 @@
   <artifactId>esp32-flash-example</artifactId>
 
   <properties>
-    <dep.jSerialComm.version>2.11.0</dep.jSerialComm.version>
-    <dep.slf4j-simple.version>2.0.12</dep.slf4j-simple.version>
     <basepom.deploy.skip>true</basepom.deploy.skip>
   </properties>
 
@@ -30,12 +28,10 @@
     <dependency>
       <groupId>com.fazecast</groupId>
       <artifactId>jSerialComm</artifactId>
-      <version>${dep.jSerialComm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>${dep.slf4j-simple.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

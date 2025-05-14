@@ -47,12 +47,19 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <dep.jcip-annotations.version>1.0</dep.jcip-annotations.version>
-    <dep.spotbugs-annotations.version>3.1.3</dep.spotbugs-annotations.version>
+
     <sonar.organization>dkaukov</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <basepom.release.profiles>basepom.central-release</basepom.release.profiles>
     <basepom.license.header>license-header.txt</basepom.license.header>
+
+    <dep.jcip-annotations.version>1.0</dep.jcip-annotations.version>
+    <dep.spotbugs-annotations.version>3.1.3</dep.spotbugs-annotations.version>
+    <dep.jSerialComm.version>2.11.0</dep.jSerialComm.version>
+    <dep.minimal-json.version>0.9.5</dep.minimal-json.version>
+    <dep.lombok.version>1.18.38</dep.lombok.version>
+    <dep.junit-jupiter.version>5.12.0</dep.junit-jupiter.version>
+    <dep.slf4j.version>2.0.12</dep.slf4j.version>
   </properties>
 
   <scm>
@@ -85,6 +92,36 @@
         <groupId>io.github.dkaukov</groupId>
         <artifactId>esp32-flash-lib</artifactId>
         <version>1.0.10-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fazecast</groupId>
+        <artifactId>jSerialComm</artifactId>
+        <version>${dep.jSerialComm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${dep.slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.eclipsesource.minimal-json</groupId>
+        <artifactId>minimal-json</artifactId>
+        <version>${dep.minimal-json.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${dep.lombok.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${dep.slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
