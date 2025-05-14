@@ -20,9 +20,11 @@ import org.dkaukov.esp32.core.EspFlasherApi;
 import org.dkaukov.esp32.io.SerialTransport;
 import org.dkaukov.esp32.test.SlipLoggingSerialTransport;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-class EspFlasherProtocolTest {
+@Disabled
+class TraceGeneratorTest {
 
   static SerialPort comPort;
   private EspFlasherProtocol protocol;
@@ -110,13 +112,46 @@ class EspFlasherProtocolTest {
 
   @Test
   void eraseFlash() throws IOException {
-    byte [] data = new byte[1024];
     protocol = new EspFlasherProtocol(new SlipLoggingSerialTransport(new TestTransport(comPort), Path.of("src/test/resources/erase-flash.txt")));
     protocol.enterBootLoader();
     protocol.sync();
     protocol.detectChip();
     protocol.loadStub();
     protocol.eraseFlash();
+    protocol.reset();
+  }
+
+  @Test
+  void writeMem() throws IOException {
+    byte [] data = new byte[1024];
+    protocol = new EspFlasherProtocol(new SlipLoggingSerialTransport(new TestTransport(comPort), Path.of("src/test/resources/write-mem.txt")));
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.memWrite(data, 0x1800, 0x0000);
+    protocol.reset();
+  }
+
+  @Test
+  void verifyFlash() throws IOException {
+    byte [] data = new byte[1024];
+    protocol = new EspFlasherProtocol(new SlipLoggingSerialTransport(new TestTransport(comPort), Path.of("src/test/resources/verify-flash.txt")));
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.flashMd5Verify(data, 0x0000);
+    protocol.reset();
+  }
+
+  @Test
+  void writeDeflFlash() throws IOException {
+    byte [] data = new byte[1024];
+    protocol = new EspFlasherProtocol(new SlipLoggingSerialTransport(new TestTransport(comPort), Path.of("src/test/resources/write-defl-flash.txt")));
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.flashDeflWrite(data, 0x400, 0x0000);
     protocol.reset();
   }
 }
