@@ -48,7 +48,7 @@ public class SlipLoggingSerialTransport implements SerialTransport {
   }
 
   @Override
-  public void write(byte[] buffer, int length) {
+  public void write(byte[] buffer, int length) throws IOException {
     for (int i = 0; i < length; i++) {
       byte b = buffer[i];
       writeBuffer.write(b);
@@ -63,7 +63,7 @@ public class SlipLoggingSerialTransport implements SerialTransport {
   }
 
   @Override
-  public int read(byte[] buffer, int length) {
+  public int read(byte[] buffer, int length) throws IOException {
     int read = delegate.read(buffer, length);
     for (int i = 0; i < read; i++) {
       byte b = buffer[i];
@@ -89,7 +89,7 @@ public class SlipLoggingSerialTransport implements SerialTransport {
   }
 
   @Override
-  public void setControlLines(boolean dtr, boolean rts) {
+  public void setControlLines(boolean dtr, boolean rts) throws IOException {
     logWriter.printf("%s SET_CONTROL_LINES DTR=%s RTS=%s%n", timestamp(), dtr, rts);
     logWriter.flush();
     delegate.setControlLines(dtr, rts);
