@@ -22,6 +22,7 @@ import static org.dkaukov.esp32.utils.Utils.slipDecode;
 import static org.dkaukov.esp32.utils.Utils.slipEncode;
 import static org.dkaukov.esp32.utils.Utils.time;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +48,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -635,6 +637,7 @@ public class EspFlasherProtocol {
     this.serialTransport = serialTransport;
   }
 
+  @SneakyThrows
   private EspReply exchange(EspCommand command, int timeoutMs, boolean verify) {
     CommandPacket commandPacket = command.toPacket();
     byte[] pkt = slipEncode(commandPacket.getPacket());
@@ -661,6 +664,7 @@ public class EspFlasherProtocol {
     return slipDecode(frame);
   }
 
+  @SneakyThrows
   private Optional<Byte> readByte() {
     byte[] readBuf = new byte[1];
     return serialTransport.read(readBuf, 1) > 0 ? Optional.of(readBuf[0]) : Optional.empty();
@@ -970,8 +974,12 @@ public class EspFlasherProtocol {
         ByteBuffer payload = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
         payload.putInt(pos);
         byte[] pkt = slipEncode(payload.array());
-        serialTransport.write(pkt, pkt.length);
-        log.trace(">>>>: {}: {}", pkt.length, printHex(pkt));
+          try {
+              serialTransport.write(pkt, pkt.length);
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+          log.trace(">>>>: {}: {}", pkt.length, printHex(pkt));
         progressCallback.onProgress((pos * 100.0f) / length);
       }
       String flashMd5 = printHex2(waitForResponse(null, timeoutPerMb(Timeout.READ_REGION_PER_MB, blockSize)));
@@ -990,8 +998,12 @@ public class EspFlasherProtocol {
   public void sync() {
     byte[] pkt = slipEncode(SyncCommand.builder().build().toPacket().getPacket());
     for (int i = 0; i < PROTOCOL_SYNC_ATTEMPTS; i++) {
-      serialTransport.write(pkt, pkt.length);
-      try {
+        try {
+            serialTransport.write(pkt, pkt.length);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
         EspReply res = waitForResponse(RomCommand.SYNC, Timeout.SYNC);
         if (res.isSuccess(false)) {
           flushPendingReplies();
@@ -1014,11 +1026,13 @@ public class EspFlasherProtocol {
     }
   }
 
+  @SneakyThrows
   public void runUserCode() {
     byte[] pkt = slipEncode(RunUserCodeCommand.builder().build().toPacket().getPacket());
     serialTransport.write(pkt, pkt.length);
   }
 
+  @SneakyThrows
   public void reset() {
     serialTransport.setControlLines(false, false);
     delayMS(100);
@@ -1027,6 +1041,7 @@ public class EspFlasherProtocol {
     serialTransport.setControlLines(false, false);
   }
 
+  @SneakyThrows
   public void enterBootLoader() {
     serialTransport.setControlLines(true, false);
     delayMS(100);

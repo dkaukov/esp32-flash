@@ -11,8 +11,10 @@
  */
 package org.dkaukov.esp32.io;
 
+import java.io.IOException;
+
 public interface SerialTransport {
-  int read(byte[] buffer, int length);
-  void write(byte[] buffer, int length);
-  void setControlLines(boolean dtr, boolean rts);
+  int read(byte[] buffer, int length) throws IOException;
+  void write(byte[] buffer, int length) throws IOException;
+  void setControlLines(boolean dtr, boolean rts) throws IOException;
 }
