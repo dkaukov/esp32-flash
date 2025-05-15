@@ -15,7 +15,7 @@
 
   <groupId>io.github.dkaukov</groupId>
   <artifactId>esp32-flash</artifactId>
-  <version>1.0.10-SNAPSHOT</version>
+  <version>1.1.10-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <description>Java library for interacting with ESP32 flash and bootloader from host tools.</description>
@@ -91,7 +91,7 @@
       <dependency>
         <groupId>io.github.dkaukov</groupId>
         <artifactId>esp32-flash-lib</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.1.10-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.fazecast</groupId>
