@@ -41,6 +41,7 @@ import com.eclipsesource.json.JsonObject;
 import org.dkaukov.esp32.chip.Esp32ChipId;
 import org.dkaukov.esp32.chip.RomErrorCode;
 import org.dkaukov.esp32.chip.StubErrorCode;
+import org.dkaukov.esp32.io.SerialBufferedReader;
 import org.dkaukov.esp32.io.ProgressCallback;
 import org.dkaukov.esp32.io.SerialTransport;
 
@@ -132,14 +133,10 @@ public class EspFlasherProtocol {
   @Getter
   private Esp32ChipId chipId;
   private final SerialTransport serialTransport;
-  private static final int BUFFER_SIZE = 512;
-  private final byte[] buffer = new byte[BUFFER_SIZE];
-  private volatile int bufferPos = 0;
-  private volatile int bufferLimit = 0;
+  private final SerialBufferedReader reader;
   @Getter
   private boolean isStub = false;
-  private @Nonnull ProgressCallback progressCallback = new ProgressCallback() {
-  };
+  private @Nonnull ProgressCallback progressCallback = new ProgressCallback() {};
 
   interface EspCommand {
     CommandPacket toPacket();
@@ -639,6 +636,7 @@ public class EspFlasherProtocol {
   @SuppressFBWarnings("EI_EXPOSE_REP2")
   public EspFlasherProtocol(SerialTransport serialTransport) {
     this.serialTransport = serialTransport;
+    reader = new SerialBufferedReader(serialTransport, 1024);
   }
 
   @SneakyThrows
@@ -668,24 +666,12 @@ public class EspFlasherProtocol {
     return slipDecode(frame);
   }
 
-  @SneakyThrows
-  private Optional<Byte> readByte() {
-    if (bufferPos >= bufferLimit) {
-      bufferLimit = serialTransport.read(buffer, BUFFER_SIZE);
-      bufferPos = 0;
-      if (bufferLimit <= 0) {
-        return Optional.empty(); // End of stream or no data
-      }
-    }
-    return Optional.of(buffer[bufferPos++]);
-  }
-
   private EspReply waitForResponse(byte opCode, int timeoutMs) {
     long deadline = System.currentTimeMillis() + timeoutMs;
     ByteBuffer buffer = ByteBuffer.allocate(MAX_RESPONSE_FRAME_SIZE);
     AtomicBoolean inFrame = new AtomicBoolean(false);
     while (System.currentTimeMillis() < deadline) {
-      Optional<ResponsePacket> res = readByte().flatMap(
+      Optional<ResponsePacket> res = reader.read().flatMap(
           b -> {
             if (b == SLIP_SEPARATOR) {
               if (inFrame.get()) {
@@ -718,7 +704,7 @@ public class EspFlasherProtocol {
     ByteBuffer buffer = ByteBuffer.allocate(MAX_RESPONSE_FRAME_SIZE);
     boolean inFrame = false;
     while (System.currentTimeMillis() < deadline) {
-      Optional<Byte> maybeByte = readByte();
+      Optional<Byte> maybeByte = reader.read();
       if (maybeByte.isEmpty()) {
         delayMS(0);
         continue;
@@ -830,6 +816,7 @@ public class EspFlasherProtocol {
   }
 
   public void flashMd5Verify(byte[] image, int flashOffset) {
+    progressCallback.onInfo(String.format("Verifying %d bytes at 0x%08X...", image.length, flashOffset));
     final EspReply reply = exchange(SpiFlashMd5Command.builder()
       .address(flashOffset)
       .size(image.length)
@@ -844,6 +831,7 @@ public class EspFlasherProtocol {
   }
 
   protected void memWrite(byte[] image, int blockSize, int memOffset) {
+    progressCallback.onInfo(String.format("Writing %d bytes at 0x%08X...", image.length, memOffset));
     int numBlocks = (image.length + blockSize - 1) / blockSize;
     exchange(MemBeginCommand.builder()
       .size(image.length)
@@ -887,17 +875,20 @@ public class EspFlasherProtocol {
   }
 
   public void espSpiAttach() {
+    progressCallback.onInfo("Attaching SPI flash...");
     exchange(SpiAttachCommand.builder()
       .build(), Timeout.COMMAND_SHORT);
   }
 
   public void setFlashSize(int size) {
+    progressCallback.onInfo("Setting flash size to " + size);
     exchange(SpiSetParamsCommand.builder()
       .totalSize(size)
       .build(), Timeout.COMMAND_SHORT);
   }
 
   public void changeBaudRate(int baudRate) {
+    progressCallback.onInfo("Changing baud rate to " + baudRate);
     exchange(ChangeBaudRateCommand.builder()
       .baudRate(baudRate)
       .build(), Timeout.COMMAND_SHORT);
@@ -1031,8 +1022,6 @@ public class EspFlasherProtocol {
       try {
         waitForResponse(RomCommand.SYNC, Timeout.SYNC);
       } catch (CommandTimeoutException e) {
-        bufferPos = 0;
-        bufferLimit = 0;
         return;
       }
     }
