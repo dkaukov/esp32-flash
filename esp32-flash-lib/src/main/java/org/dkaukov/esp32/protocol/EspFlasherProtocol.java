@@ -636,7 +636,7 @@ public class EspFlasherProtocol {
   @SuppressFBWarnings("EI_EXPOSE_REP2")
   public EspFlasherProtocol(SerialTransport serialTransport) {
     this.serialTransport = serialTransport;
-    reader = new SerialBufferedReader(serialTransport, 1024);
+    reader = new SerialBufferedReader(serialTransport, serialTransport.readBufferSize());
   }
 
   @SneakyThrows

@@ -16,10 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.dkaukov.esp32.io.ProgressCallback;
 import org.dkaukov.esp32.test.SlipLogPlayer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 class EspFlasherProtocolTest {
 
   private EspFlasherProtocol protocol;
@@ -27,7 +31,14 @@ class EspFlasherProtocolTest {
 
   private EspFlasherProtocol getProtocol(String trace) throws IOException {
     player = new SlipLogPlayer(Path.of("src/test/resources/" + trace));
-    return new EspFlasherProtocol(player);
+    EspFlasherProtocol res = new EspFlasherProtocol(player);
+    res.setProgressCallback(new ProgressCallback() {
+      @Override
+      public void onInfo(String value) {
+        log.info(value);
+      }
+    });
+    return res;
   }
 
   @Test

@@ -17,4 +17,5 @@ public interface SerialTransport {
   int read(byte[] buffer, int length) throws IOException;
   void write(byte[] buffer, int length) throws IOException;
   void setControlLines(boolean dtr, boolean rts) throws IOException;
+  default int readBufferSize() {return 64;}
 }
