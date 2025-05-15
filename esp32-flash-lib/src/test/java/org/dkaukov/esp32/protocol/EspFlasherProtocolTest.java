@@ -14,65 +14,15 @@ package org.dkaukov.esp32.protocol;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import com.fazecast.jSerialComm.SerialPort;
-
-import org.dkaukov.esp32.core.EspFlasherApi;
-import org.dkaukov.esp32.io.SerialTransport;
-import org.dkaukov.esp32.test.SlipLoggingSerialTransport;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
+import org.dkaukov.esp32.test.SlipLogPlayer;
 import org.junit.jupiter.api.Test;
 
-@Disabled
-class TraceGeneratorTest {
+class EspFlasherProtocolTest {
 
-  static SerialPort comPort;
   private EspFlasherProtocol protocol;
 
-  static class TestTransport implements SerialTransport {
-    private final SerialPort port;
-    TestTransport(SerialPort port) {
-      this.port = port;
-    }
-
-    @Override
-    public int read(byte[] buffer, int length) {
-      return port.readBytes(buffer, length);
-    }
-
-    @Override
-    public void write(byte[] buffer, int length) {
-      port.writeBytes(buffer, length);
-    }
-
-    @Override
-    public void setControlLines(boolean dtr, boolean rts) {
-      if (dtr) {
-        port.setDTR();
-      }
-      if (rts) {
-        port.setRTS();
-      }
-      if (!dtr) {
-        port.clearDTR();
-      }
-      if (!rts) {
-        port.clearRTS();
-      }
-    }
-  }
-
-  @BeforeAll
-  static void setUp() throws IOException {
-    // get the first port available, you might want to change that
-    comPort = SerialPort.getCommPorts()[6];
-    System.out.println("Connected to: \"" + comPort.getDescriptivePortName() + "\"");
-    comPort.setBaudRate(EspFlasherApi.ESP_ROM_BAUD);
-    comPort.openPort();
-  }
-
-  private static EspFlasherProtocol getProtocol(String first) throws IOException {
-    return new EspFlasherProtocol(new SlipLoggingSerialTransport(new TestTransport(comPort), Path.of(first)));
+  private static EspFlasherProtocol getProtocol(String trace) throws IOException {
+    return new EspFlasherProtocol(new SlipLogPlayer(Path.of(trace)));
   }
 
   @Test
