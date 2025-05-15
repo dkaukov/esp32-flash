@@ -38,11 +38,11 @@ import javax.annotation.Nonnull;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
-import org.dkaukov.esp32.io.ProgressCallback;
-import org.dkaukov.esp32.io.SerialTransport;
-import org.dkaukov.esp32.chip.StubErrorCode;
 import org.dkaukov.esp32.chip.Esp32ChipId;
 import org.dkaukov.esp32.chip.RomErrorCode;
+import org.dkaukov.esp32.chip.StubErrorCode;
+import org.dkaukov.esp32.io.ProgressCallback;
+import org.dkaukov.esp32.io.SerialTransport;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Builder;
@@ -977,7 +977,7 @@ public class EspFlasherProtocol {
           try {
               serialTransport.write(pkt, pkt.length);
           } catch (IOException e) {
-              throw new RuntimeException(e);
+              throw new ProtocolFatalException(e);
           }
           log.trace(">>>>: {}: {}", pkt.length, printHex(pkt));
         progressCallback.onProgress((pos * 100.0f) / length);
@@ -1001,7 +1001,7 @@ public class EspFlasherProtocol {
         try {
             serialTransport.write(pkt, pkt.length);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ProtocolFatalException(e);
         }
         try {
         EspReply res = waitForResponse(RomCommand.SYNC, Timeout.SYNC);

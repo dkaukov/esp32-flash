@@ -19,4 +19,8 @@ public class ProtocolFatalException extends RuntimeException {
   public ProtocolFatalException(String message) {
     super(message);
   }
+
+  public ProtocolFatalException(Throwable cause) {
+    super(cause);
+  }
 }
