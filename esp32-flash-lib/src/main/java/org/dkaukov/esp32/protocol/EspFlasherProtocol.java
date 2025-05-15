@@ -829,13 +829,13 @@ public class EspFlasherProtocol {
     }
   }
 
-  protected void memWrite(byte[] image, int blockSize, int flashOffset) {
+  protected void memWrite(byte[] image, int blockSize, int memOffset) {
     int numBlocks = (image.length + blockSize - 1) / blockSize;
     exchange(MemBeginCommand.builder()
       .size(image.length)
       .blocks(numBlocks)
       .blockSize(blockSize)
-      .offset(flashOffset)
+      .offset(memOffset)
       .build(), timeoutPerMb(Timeout.ERASE_REGION_PER_MB, image.length));
     for (int seq = 0; seq < numBlocks; seq++) {
       int offset = seq * blockSize;

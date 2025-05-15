@@ -22,7 +22,11 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.dkaukov.esp32.io.SerialTransport;
+import org.dkaukov.esp32.utils.Utils;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class SlipLogPlayer implements SerialTransport {
   private enum Direction { READ, WRITE, CONTROL }
 
@@ -52,6 +56,7 @@ public class SlipLogPlayer implements SerialTransport {
   private final List<LogEntry> logEntries;
   private int index = 0;
   private ByteArrayInputStream currentReadBuffer = null;
+  private double nextTimestamp = 0;
 
   public SlipLogPlayer(Path logFile) throws IOException {
     this.logEntries = parseLogFile(logFile);
@@ -64,6 +69,9 @@ public class SlipLogPlayer implements SerialTransport {
       throw new AssertionError("Expected WRITE entry but got: " + entry.direction);
     if (!Arrays.equals(Arrays.copyOf(buffer, length), entry.data))
       throw new AssertionError("WRITE data mismatch at timestamp: " + entry.timestamp);
+    if (currentReadBuffer != null) {
+      currentReadBuffer = null;
+    }
   }
 
   @Override
@@ -73,6 +81,7 @@ public class SlipLogPlayer implements SerialTransport {
       if (entry.direction != Direction.READ)
         throw new AssertionError("Expected READ entry but got: " + entry.direction);
       currentReadBuffer = new ByteArrayInputStream(entry.data);
+      Utils.delayMS((int) Math.round((nextTimestamp - entry.timestamp) * 1100.0));
     }
     return currentReadBuffer.read(buffer, 0, length);
   }
@@ -80,17 +89,24 @@ public class SlipLogPlayer implements SerialTransport {
   @Override
   public void setControlLines(boolean dtr, boolean rts) {
     LogEntry entry = nextEntry();
-    if (entry.direction != Direction.CONTROL)
+    if (entry.direction != Direction.CONTROL) {
       throw new AssertionError("Expected CONTROL entry but got: " + entry.direction);
-    if (!Objects.equals(entry.dtr, dtr) || !Objects.equals(entry.rts, rts))
+    }
+    if (!Objects.equals(entry.dtr, dtr) || !Objects.equals(entry.rts, rts)) {
       throw new AssertionError(String.format("Control line mismatch at %.3f: expected DTR=%s RTS=%s but got DTR=%s RTS=%s",
-        entry.timestamp, entry.dtr, entry.rts, dtr, rts));
+          entry.timestamp, entry.dtr, entry.rts, dtr, rts));
+    }
+    Utils.delayMS((int) Math.round((nextTimestamp - entry.timestamp) * 1000.0));
   }
 
   private LogEntry nextEntry() {
     if (index >= logEntries.size())
       throw new NoSuchElementException("No more log entries");
-    return logEntries.get(index++);
+    LogEntry res = logEntries.get(index++);
+    if (index < logEntries.size()) {
+      nextTimestamp = logEntries.get(index).timestamp;
+    }
+    return res;
   }
 
   private static List<LogEntry> parseLogFile(Path path) throws IOException {
