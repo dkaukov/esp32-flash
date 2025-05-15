@@ -63,7 +63,7 @@ class TraceGeneratorTest {
   }
 
   @BeforeAll
-  static void setUp() throws IOException {
+  static void setUp() {
     // get the first port available, you might want to change that
     comPort = SerialPort.getCommPorts()[6];
     System.out.println("Connected to: \"" + comPort.getDescriptivePortName() + "\"");
