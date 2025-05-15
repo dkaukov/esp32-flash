@@ -132,6 +132,10 @@ public class EspFlasherProtocol {
   @Getter
   private Esp32ChipId chipId;
   private final SerialTransport serialTransport;
+  private static final int BUFFER_SIZE = 512;
+  private final byte[] buffer = new byte[BUFFER_SIZE];
+  private volatile int bufferPos = 0;
+  private volatile int bufferLimit = 0;
   @Getter
   private boolean isStub = false;
   private @Nonnull ProgressCallback progressCallback = new ProgressCallback() {
@@ -666,8 +670,14 @@ public class EspFlasherProtocol {
 
   @SneakyThrows
   private Optional<Byte> readByte() {
-    byte[] readBuf = new byte[1];
-    return serialTransport.read(readBuf, 1) > 0 ? Optional.of(readBuf[0]) : Optional.empty();
+    if (bufferPos >= bufferLimit) {
+      bufferLimit = serialTransport.read(buffer, BUFFER_SIZE);
+      bufferPos = 0;
+      if (bufferLimit <= 0) {
+        return Optional.empty(); // End of stream or no data
+      }
+    }
+    return Optional.of(buffer[bufferPos++]);
   }
 
   private EspReply waitForResponse(byte opCode, int timeoutMs) {
@@ -1021,6 +1031,8 @@ public class EspFlasherProtocol {
       try {
         waitForResponse(RomCommand.SYNC, Timeout.SYNC);
       } catch (CommandTimeoutException e) {
+        bufferPos = 0;
+        bufferLimit = 0;
         return;
       }
     }
