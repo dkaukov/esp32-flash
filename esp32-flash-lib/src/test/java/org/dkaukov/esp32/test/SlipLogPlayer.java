@@ -87,7 +87,7 @@ public class SlipLogPlayer implements SerialTransport {
       if (entry.direction != Direction.READ)
         throw new AssertionError("Expected READ entry but got: " + entry.direction);
       currentReadBuffer = new ByteArrayInputStream(entry.data);
-      readDelay = (int) Math.round((nextTimestamp - entry.timestamp) * 1000.0);
+      readDelay = (int) Math.round((nextTimestamp - entry.timestamp) * 1100.0);
     }
     return currentReadBuffer.read(buffer, 0, length);
   }

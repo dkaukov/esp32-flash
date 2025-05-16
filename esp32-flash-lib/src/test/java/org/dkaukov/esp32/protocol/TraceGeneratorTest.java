@@ -71,13 +71,13 @@ class TraceGeneratorTest {
     comPort.openPort();
   }
 
-  private static EspFlasherProtocol getProtocol(String first) throws IOException {
-    return new EspFlasherProtocol(new SlipLoggingSerialTransport(new TestTransport(comPort), Path.of(first)));
+  private static EspFlasherProtocol getProtocol(String file) throws IOException {
+    return new EspFlasherProtocol(new SlipLoggingSerialTransport(new TestTransport(comPort), Path.of("src/test/resources/" + file)));
   }
 
   @Test
   void sync() throws IOException {
-    protocol = getProtocol("src/test/resources/sync.txt");
+    protocol = getProtocol("sync.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.reset();
@@ -85,7 +85,7 @@ class TraceGeneratorTest {
 
   @Test
   void detectChip() throws IOException {
-    protocol = getProtocol("src/test/resources/detect-chip.txt");
+    protocol = getProtocol("detect-chip.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.detectChip();
@@ -94,7 +94,7 @@ class TraceGeneratorTest {
 
   @Test
   void loadStub() throws IOException {
-    protocol = getProtocol("src/test/resources/load-stub.txt");
+    protocol = getProtocol("load-stub.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.detectChip();
@@ -105,7 +105,7 @@ class TraceGeneratorTest {
   @Test
   void writeFlash() throws IOException {
     byte [] data = new byte[1024];
-    protocol = getProtocol("src/test/resources/write-flash.txt");
+    protocol = getProtocol("write-flash.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.detectChip();
@@ -116,7 +116,7 @@ class TraceGeneratorTest {
 
   @Test
   void eraseFlash() throws IOException {
-    protocol = getProtocol("src/test/resources/erase-flash.txt");
+    protocol = getProtocol("erase-flash.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.detectChip();
@@ -128,7 +128,7 @@ class TraceGeneratorTest {
   @Test
   void writeMem() throws IOException {
     byte [] data = new byte[1024];
-    protocol = getProtocol("src/test/resources/write-mem.txt");
+    protocol = getProtocol("write-mem.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.memWrite(data, 0x1800, 0x0000);
@@ -138,7 +138,7 @@ class TraceGeneratorTest {
   @Test
   void verifyFlash() throws IOException {
     byte [] data = new byte[1024];
-    protocol = getProtocol("src/test/resources/verify-flash.txt");
+    protocol = getProtocol("verify-flash.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.detectChip();
@@ -150,12 +150,121 @@ class TraceGeneratorTest {
   @Test
   void writeDeflFlash() throws IOException {
     byte [] data = new byte[1024];
-    protocol = getProtocol("src/test/resources/write-defl-flash.txt");
+    protocol = getProtocol("write-defl-flash.txt");
     protocol.enterBootLoader();
     protocol.sync();
     protocol.detectChip();
     protocol.loadStub();
     protocol.flashDeflWrite(data, 0x400, 0x0000);
+    protocol.reset();
+  }
+
+  @Test
+  void eraseFlashRegion() throws IOException {
+    protocol = getProtocol("erase-flash-region.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.eraseFlashRegion(0x0000, 0x400);
+    protocol.reset();
+  }
+
+  @Test
+  void readFlashRegion() throws IOException {
+    byte [] data = new byte[1024];
+    protocol = getProtocol("read-flash-region.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.readFlash(data, 0x0000, 0x400);
+    protocol.reset();
+  }
+
+  @Test
+  void runUserCode() throws IOException {
+    protocol = getProtocol("run-user-code.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.runUserCode();
+    protocol.reset();
+  }
+
+  @Test
+  void updateReg() throws IOException {
+    protocol = getProtocol("update-reg.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.updateReg(0x0000, 0xFFFFF, 0x1234);
+    protocol.reset();
+  }
+
+  @Test
+  void endFlash() throws IOException {
+    protocol = getProtocol("end-flash.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.endFlash(true);
+    protocol.reset();
+  }
+
+  @Test
+  void endDeflFlash() throws IOException {
+    protocol = getProtocol("end-defl-flash.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.loadStub();
+    protocol.endDeflFlash(true);
+    protocol.reset();
+  }
+
+  @Test
+  void writeFlashNoStub() throws IOException {
+    byte [] data = new byte[1024];
+    protocol = getProtocol("write-flash-no-stub.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.espSpiAttach();
+    protocol.flashWrite(data, 0x400, 0x0000);
+    protocol.reset();
+  }
+
+  @Test
+  void writeDeflFlashNoStub() throws IOException {
+    byte [] data = new byte[1024];
+    protocol = getProtocol("write-defl-flash-no-stub.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.detectChip();
+    protocol.espSpiAttach();
+    protocol.flashDeflWrite(data, 0x400, 0x0000);
+    protocol.reset();
+  }
+
+  @Test
+  void changeBaudRate() throws IOException {
+    protocol = getProtocol("change-baud-rate.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.changeBaudRate(115200);
+    protocol.reset();
+  }
+
+  @Test
+  void setFlashSize() throws IOException {
+    protocol = getProtocol("set-flash-size.txt");
+    protocol.enterBootLoader();
+    protocol.sync();
+    protocol.setFlashSize(1024 * 1024 * 4);
     protocol.reset();
   }
 }
