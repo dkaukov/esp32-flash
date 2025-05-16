@@ -34,7 +34,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>runtime</scope>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>io.github.dkaukov</groupId>
