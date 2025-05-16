@@ -22,6 +22,7 @@
 
   <properties>
     <basepom.deploy.skip>true</basepom.deploy.skip>
+    <basepom.check.skip-license>true</basepom.check.skip-license>
   </properties>
 
   <dependencies>
