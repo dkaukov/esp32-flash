@@ -59,7 +59,7 @@
     <dep.minimal-json.version>0.9.5</dep.minimal-json.version>
     <dep.lombok.version>1.18.38</dep.lombok.version>
     <dep.junit-jupiter.version>5.12.0</dep.junit-jupiter.version>
-    <dep.slf4j.version>2.0.12</dep.slf4j.version>
+    <dep.slf4j.version>1.7.36</dep.slf4j.version>
   </properties>
 
   <scm>
