@@ -738,7 +738,7 @@ public class EspFlasherProtocol {
   public void flashWrite(byte[] image, int blockSize, int flashOffset) {
     int blocks = (image.length + blockSize - 1) / blockSize;
     progressCallback.onStart();
-    progressCallback.onInfo(String.format("Writing %d bytes at 0x%08X...", image.length, flashOffset));
+    progressCallback.onInfo(String.format("flashWrite: Writing %d bytes at 0x%08X into flash...", image.length, flashOffset));
     time(() -> exchange(FlashBeginCommand.builder()
         .size(image.length)
         .blocks(blocks)
@@ -749,7 +749,7 @@ public class EspFlasherProtocol {
       , t -> {
         if (!isStub) {
           progressCallback.onInfo(String.format(
-            "Took %.2f seconds to erase %d bytes at 0x%08x", t / 1000.0, image.length, flashOffset)
+            "flashWrite: Took %.2f seconds to erase %d bytes at 0x%08x", t / 1000.0, image.length, flashOffset)
           );
         }
       });
@@ -769,18 +769,18 @@ public class EspFlasherProtocol {
       }
       progressCallback.onProgress(100.0f);
       progressCallback.onEnd();
-    }, t -> progressCallback.onInfo(String.format("Wrote %d bytes at 0x%08X in %.2f seconds (effective %.2f kBit/s)...",
+    }, t -> progressCallback.onInfo(String.format("flashWrite: Wrote %d bytes at 0x%08X in %.2f seconds (effective %.2f kBit/s)...",
       image.length, flashOffset, t / 1000.0, (image.length * 8) / (t / 1000.0) / 1024.0)));
   }
 
   public void flashDeflWrite(byte[] image, int blockSize, int flashOffset) {
     progressCallback.onStart();
-    progressCallback.onInfo(String.format("Writing %d bytes at 0x%08X...", image.length, flashOffset));
     // Step 1: Compress the data
     final byte[] compressed = compressBytes(image);
     int uncompressedSize = image.length;
     int compressedSize = compressed.length;
     int blocks = (compressedSize + blockSize - 1) / blockSize;
+    progressCallback.onInfo(String.format("flashDeflWrite: Writing %d bytes (%d compressed) at 0x%08X into flash...", uncompressedSize, compressedSize, flashOffset));
     // Step 2: Send FlashDeflBegin
     time(() -> exchange(FlashDeflBeginCommand.builder()
         .uncompressedSize(isStub ? uncompressedSize : blockSize * blocks)
@@ -792,7 +792,7 @@ public class EspFlasherProtocol {
       , t -> {
         if (!isStub) {
           progressCallback.onInfo(String.format(
-            "Took %.2f seconds to erase %d bytes at 0x%08x", t / 1000.0, uncompressedSize, flashOffset)
+            "flashDeflWrite: Took %.2f seconds to erase %d bytes at 0x%08x", t / 1000.0, uncompressedSize, flashOffset)
           );
         }
       });
@@ -811,7 +811,7 @@ public class EspFlasherProtocol {
       }
       progressCallback.onProgress(100.0f);
       progressCallback.onEnd();
-    }, t -> progressCallback.onInfo(String.format("Wrote %d bytes (%d compressed) at 0x%08X in %.2f seconds (effective %.2f kBit/s)...",
+    }, t -> progressCallback.onInfo(String.format("flashDeflWrite: Wrote %d bytes (%d compressed) at 0x%08X in %.2f seconds (effective %.2f kBit/s)...",
         uncompressedSize, compressedSize, flashOffset, t / 1000.0, (uncompressedSize * 8) / (t / 1000.0) / 1024.0)));
   }
 
@@ -831,7 +831,7 @@ public class EspFlasherProtocol {
   }
 
   protected void memWrite(byte[] image, int blockSize, int memOffset) {
-    progressCallback.onInfo(String.format("Writing %d bytes at 0x%08X...", image.length, memOffset));
+    progressCallback.onInfo(String.format("Writing %d bytes at 0x%08X into RAM...", image.length, memOffset));
     int numBlocks = (image.length + blockSize - 1) / blockSize;
     exchange(MemBeginCommand.builder()
       .size(image.length)
