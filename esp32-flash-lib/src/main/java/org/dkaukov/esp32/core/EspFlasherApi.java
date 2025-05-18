@@ -211,8 +211,8 @@ public final class EspFlasherApi {
     }
 
     public static byte[] readFile(Path path) {
-      try {
-        return Files.readAllBytes(path);
+      try (InputStream is = Files.newInputStream(path)) {
+        return readStream(is);
       } catch (IOException e) {
         throw new UncheckedIOException("Failed to read file: " + path, e);
       }
@@ -227,7 +227,7 @@ public final class EspFlasherApi {
         if (is == null) {
           throw new FileNotFoundException("Resource not found: " + resourcePath);
         }
-        return is.readAllBytes();
+        return readStream(is);
       } catch (IOException e) {
         throw new UncheckedIOException("Failed to read resource: " + resourcePath, e);
       }
