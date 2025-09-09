@@ -20,6 +20,7 @@
 
   <artifactId>esp32-flash-lib</artifactId>
   <url>https://github.com/dkaukov/esp32-flash</url>
+  <name>ESP32 Flash Library</name>
 
   <properties>
   </properties>

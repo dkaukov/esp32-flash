@@ -20,6 +20,7 @@
 
   <description>Java library for interacting with ESP32 flash and bootloader from host tools.</description>
   <url>https://github.com/dkaukov/esp32-flash</url>
+  <name>ESP32 Flash</name>
 
   <licenses>
     <license>
